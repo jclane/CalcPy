@@ -1,6 +1,7 @@
 import tkinter as tk
 import ast
 import operator
+from math import sqrt
 
 
 class Main(tk.Tk):
@@ -8,6 +9,7 @@ class Main(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         self.equation = tk.StringVar()
+        self.equation.set("0")
         
         self.container = tk.Frame(self)
         self.container.grid(column=0, row=0, sticky="NSEW")
@@ -33,9 +35,9 @@ class Main(tk.Tk):
         
         tk.Button(self.buttons, text="<--").grid(column=0, row=3, padx=2.5, pady=2.5, sticky="EW")
         tk.Button(self.buttons, text="CE").grid(column=1, row=3, padx=2.5, pady=2.5, sticky="EW")
-        tk.Button(self.buttons, text="C").grid(column=2, row=3, padx=2.5, pady=2.5, sticky="EW")
+        tk.Button(self.buttons, text="C", command=self.clear).grid(column=2, row=3, padx=2.5, pady=2.5, sticky="EW")
         tk.Button(self.buttons, text="+/-").grid(column=3, row=3, padx=2.5, pady=2.5, sticky="EW")
-        tk.Button(self.buttons, text="√").grid(column=4, row=3, padx=2.5, pady=2.5, sticky="EW")
+        tk.Button(self.buttons, text="√", command=self.square_root).grid(column=4, row=3, padx=2.5, pady=2.5, sticky="EW")
         
         tk.Button(self.buttons, text="7", command=lambda num="7": self.insert_to_entry_box(num)).grid(column=0, row=4, padx=2.5, pady=2.5, sticky="EW")
         tk.Button(self.buttons, text="8", command=lambda num="8": self.insert_to_entry_box(num)).grid(column=1, row=4, padx=2.5, pady=2.5, sticky="EW")
@@ -60,12 +62,28 @@ class Main(tk.Tk):
         tk.Button(self.buttons, text="+", command=lambda num="+": self.insert_to_entry_box(num)).grid(column=3, row=7, padx=2.5, pady=2.5, sticky="EW")
        
         self.entry_box.bind("<Return>", self.do_maths)
-        
+    
+    def insert_to_history_box(self, equation):
+        self.result_box.insert(tk.END, equation)
+    
     def insert_to_entry_box(self, value):
+        if self.equation.get() == "0":
+            self.equation.set("")
         self.entry_box.insert(tk.END, value)
-                
+
+    def square_root(self):
+        self.result = sqrt(float(self.equation.get()))
+        self.insert_to_history_box(self.equation.get())
+        self.equation.set("")
+        self.insert_to_entry_box(self.result)
+        
+    def clear(self):
+        self.equation.set("")
+        
     def do_maths(self, evt=None):
-        self.result_box.insert(tk.END, Calc.evaluate(self.equation.get()))
+        self.insert_to_history_box(self.equation.get())        
+        self.result = Calc.evaluate(self.equation.get())
+        self.equation.set(self.result)
 
         
 class Calc(ast.NodeVisitor):
