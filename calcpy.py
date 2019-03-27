@@ -5,14 +5,16 @@ from math import sqrt
 
 
 class Main(tk.Tk):
+
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        
         self.resizable(0, 0)
         self.equation = tk.StringVar()
         self.equation.set("0")
         self.calc_mem = tk.IntVar()
         self.calc_mem.set(0)
-        #self.equation_arr = [] #may or may not use this to build equation string
+        self.equation_arr = []
         
         self.container = tk.Frame(self)
         self.container.grid(column=0, row=0, sticky="NSEW")
@@ -24,7 +26,8 @@ class Main(tk.Tk):
         
         self.result_box = tk.Listbox(self.screens)
         self.result_box.grid(column=0, row=0, columnspan=2, sticky="EW")
-        self.entry_box = tk.Entry(self.screens, textvariable=self.equation)
+        
+        self.entry_box = tk.Entry(self.screens, textvariable=self.equation, state="readonly", readonlybackground="white")
         self.entry_box.grid(column=0, row=1, columnspan=5, sticky="EW")
         
         self.buttons = tk.Frame(self.container)
@@ -144,9 +147,24 @@ class Main(tk.Tk):
                   self.insert_to_entry_box(num)).grid(column=3, row=7, 
                                                       padx=2.5, pady=2.5, 
                                                       sticky="EW")
-       
-        self.bind("<Return>", self.do_maths)
-        self.buttons.bind_all("<Key>", self.key_press)
+        
+        self.set_bindings()
+        
+    def set_bindings(self):
+        self.buttons.bind_all("<Return>", self.do_maths)
+        self.buttons.bind_all("<Key-1>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-2>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-3>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-4>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-5>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-6>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-7>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-8>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-9>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-+>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-->", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-*>", self.insert_to_entry_box)
+        self.buttons.bind_all("<Key-/>", self.insert_to_entry_box)
     
     def insert_to_history_box(self, equation):
         self.result_box.insert(tk.END, equation)
@@ -154,8 +172,14 @@ class Main(tk.Tk):
     def insert_to_entry_box(self, value):
         if self.equation.get() == "0":
             self.equation.set("")
-        self.entry_box.insert(tk.END, value)
-
+        if not hasattr(value, "char"):
+            self.equation_arr.append(value)
+        else:
+            key_pressed = value.char
+            if key_pressed in "1234567890+-*/":
+                self.equation_arr.append(key_pressed)
+        self.equation.set("".join(self.equation_arr))
+        
     def square_root(self):
         try:
             self.result = sqrt(float(self.equation.get()))
@@ -170,9 +194,11 @@ class Main(tk.Tk):
         self.equation.set("")
         
     def do_maths(self, evt=None):
-        self.insert_to_history_box(self.equation.get())        
-        self.result = Calc.evaluate(self.equation.get())
-        self.equation.set(self.result)
+        if self.equation.get():
+            self.insert_to_history_box(self.equation.get())        
+            self.result = Calc.evaluate(self.equation.get())
+            self.equation_arr = [str(self.result)]
+            self.equation.set(self.result)
     
     def mem_recall(self):
         try:
@@ -205,15 +231,7 @@ class Main(tk.Tk):
     
     def back(self):
         self.entry_box.delete(len(self.entry_box.get()) - 1, tk.END)
-    
-    def add_to_equation_arr(self):
-        pass
-        
-    def key_press(self, evt):
-        key_pressed = evt.char
-        if key_pressed in "1234567890+-*/":
-            self.insert_to_entry_box(key_pressed)
-
+            
             
 class Calc(ast.NodeVisitor):
     """ 
