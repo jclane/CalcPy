@@ -10,7 +10,6 @@ class Main(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title("CalcPy")
         self.resizable(0, 0)
-        self.curr_num = ""
         self.equation = tk.StringVar()
         self.equation.set("0")
         self.calc_mem = tk.IntVar()
@@ -186,15 +185,11 @@ class Main(tk.Tk):
             self.equation.set("")
         if value in "+-*/":
             self.equation_arr.append(value)
-            self.curr_num = ""
         if value in "0123456789":
-            #self.curr_num += value
             if len(self.equation_arr) and self.equation_arr[-1] not in "+-*/":
                 self.equation_arr[-1] += value
-                self.curr_num = ""
             else:
                 self.equation_arr.append(value)
-                self.curr_num = ""
 
         self.equation.set("".join(self.equation_arr))
 
