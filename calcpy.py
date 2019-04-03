@@ -10,6 +10,7 @@ class Main(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title("CalcPy")
         self.resizable(0, 0)
+        self.curr_num = ""
         self.equation = tk.StringVar()
         self.equation.set("0")
         self.calc_mem = tk.IntVar()
@@ -154,21 +155,14 @@ class Main(tk.Tk):
 
     def set_bindings(self):
         self.buttons.bind_all("<Return>", self.do_maths)
-        self.buttons.bind_all("<Key-1>", self.insert_to_entry_box)
-        self.buttons.bind_all("<Key-2>", self.insert_to_entry_box)
-        self.buttons.bind_all("<Key-3>", self.insert_to_entry_box)
-        self.buttons.bind_all("<Key-4>", self.insert_to_entry_box)
-        self.buttons.bind_all("<Key-5>", self.insert_to_entry_box)
-        self.buttons.bind_all("<Key-6>", self.insert_to_entry_box)
-        self.buttons.bind_all("<Key-7>", self.insert_to_entry_box)
-        self.buttons.bind_all("<Key-8>", self.insert_to_entry_box)
-        self.buttons.bind_all("<Key-9>", self.insert_to_entry_box)
         self.buttons.bind_all("<Key-+>", self.insert_to_entry_box)
         self.buttons.bind_all("<Key-->", self.insert_to_entry_box)
         self.buttons.bind_all("<Key-*>", self.insert_to_entry_box)
         self.buttons.bind_all("<Key-/>", self.insert_to_entry_box)
         self.result_box.bind("<ButtonRelease-1>", self.click_history_item)
         self.buttons.bind_all("<BackSpace>", self.back)
+        for num in range(0, 9):
+            self.buttons.bind_all("Key-" + str(num) + ">", self.insert_to_entry_box)
 
     def click_history_item(self, evt):
         self.equation.set(evt.widget.get(evt.widget.curselection()[0]))
@@ -178,10 +172,9 @@ class Main(tk.Tk):
         self.result_box.insert(tk.END, equation)
 
     def insert_to_entry_box(self, value):
-        self.counter = 0
         if hasattr(value, "char"):
             value = value.char
-        if self.equation.get() == "0":
+        if self.equation.get().startswith("0"):
             self.equation.set("")
         if value in "+-*/":
             self.equation_arr.append(value)
@@ -189,8 +182,9 @@ class Main(tk.Tk):
             if len(self.equation_arr) and self.equation_arr[-1] not in "+-*/":
                 self.equation_arr[-1] += value
             else:
-                self.equation_arr.append(value)
-
+                 self.equation_arr.append(value)
+        if self.equation_arr[0] == "0":
+            del self.equation_arr[0]
         self.equation.set("".join(self.equation_arr))
 
     def square_root(self):
@@ -274,47 +268,6 @@ class Main(tk.Tk):
     def posineg(self, evt=None):
         self.equation_arr[-1] = "-" + self.equation_arr[-1]
         self.equation.set("".join(self.equation_arr))
-
-
-class Calc(ast.NodeVisitor):
-    """
-    Evaluates string equation and adheres to order of operations.
-
-    !CURRENTLY UNUSED!
-    This was used by do_maths, but I switched to 'eval' since
-    I didn't write this and didn't understand how it worked.
-
-    Stolen from:
-    https://stackoverflow.com/questions/33029168/how-to-calculate-an-equation-in-a-string-python
-    """
-    OP_MAP = {
-        ast.Add: operator.add,
-        ast.Sub: operator.sub,
-        ast.Mult: operator.mul,
-        ast.Div: operator.truediv,
-        ast.Mod: operator.mod,
-        ast.Pow: operator.pow,
-        ast.LShift: operator.lshift,
-        ast.RShift: operator.rshift,
-        ast.Invert: operator.neg,
-    }
-
-    def visit_BinOp(self, node):
-        left = self.visit(node.left)
-        right = self.visit(node.right)
-        return Calc.OP_MAP[type(node.op)](left, right)
-
-    def visit_Num(self, node):
-        return node.n
-
-    def visit_Expr(self, node):
-        return self.visit(node.value)
-
-    @classmethod
-    def evaluate(cls, expression):
-        tree = ast.parse(expression)
-        calc = cls()
-        return calc.visit(tree.body[0])
 
 if __name__ == "__main__":
     app = Main()
