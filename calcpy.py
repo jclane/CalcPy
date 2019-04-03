@@ -2,7 +2,6 @@ import tkinter as tk
 import ast
 import operator
 from math import sqrt
-from math_test import *
 
 
 class Main(tk.Tk):
@@ -57,7 +56,8 @@ class Main(tk.Tk):
         tk.Button(self.buttons, text="←",
                   command=self.back).grid(column=1, row=3, columnspan=2,
                                           padx=2.5, pady=2.5, sticky="EW")
-        tk.Button(self.buttons, text="±").grid(column=3, row=3, padx=2.5,
+        tk.Button(self.buttons, text="±",
+                  command=self.posineg).grid(column=3, row=3, padx=2.5,
                                           pady=2.5, sticky="EW")
         tk.Button(self.buttons, text="√",
                   command=self.square_root).grid(column=4, row=3, padx=2.5,
@@ -179,6 +179,7 @@ class Main(tk.Tk):
         self.result_box.insert(tk.END, equation)
 
     def insert_to_entry_box(self, value):
+        self.counter = 0
         if hasattr(value, "char"):
             value = value.char
         if self.equation.get() == "0":
@@ -187,11 +188,14 @@ class Main(tk.Tk):
             self.equation_arr.append(value)
             self.curr_num = ""
         if value in "0123456789":
-            self.curr_num += value
+            #self.curr_num += value
             if len(self.equation_arr) and self.equation_arr[-1] not in "+-*/":
-                self.equation_arr[-1] += self.curr_num
+                self.equation_arr[-1] += value
+                self.curr_num = ""
             else:
-                self.equation_arr.append(self.curr_num)
+                self.equation_arr.append(value)
+                self.curr_num = ""
+
         self.equation.set("".join(self.equation_arr))
 
     def square_root(self):
@@ -210,12 +214,20 @@ class Main(tk.Tk):
         self.curr_num = ""
 
     def do_maths(self, evt=None):
-        print(self.equation.get(), self.equation_arr)
         if self.equation.get():
             self.insert_to_history_box(self.equation.get())
-            self.result = Calc.evaluate(self.equation.get())
+            self.result = eval(self.equation.get(),
+                               {},
+                               {"add":operator.add,
+                                "sub":operator.sub,
+                                "mul":operator.mul,
+                                "truediv":operator.truediv,
+                                "sqrt":sqrt,
+                                "pow":operator.pow}
+                                )
             self.equation_arr = [str(self.result)]
             self.equation.set(self.result)
+
 
     def mem_recall(self):
         try:
@@ -264,10 +276,18 @@ class Main(tk.Tk):
             del self.equation_arr[-1]
             self.equation.set("".join(self.equation_arr))
 
+    def posineg(self, evt=None):
+        self.equation_arr[-1] = "-" + self.equation_arr[-1]
+        self.equation.set("".join(self.equation_arr))
+
 
 class Calc(ast.NodeVisitor):
     """
     Evaluates string equation and adheres to order of operations.
+
+    !CURRENTLY UNUSED!
+    This was used by do_maths, but I switched to 'eval' since
+    I didn't write this and didn't understand how it worked.
 
     Stolen from:
     https://stackoverflow.com/questions/33029168/how-to-calculate-an-equation-in-a-string-python
