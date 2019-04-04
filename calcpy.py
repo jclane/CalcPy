@@ -1,5 +1,4 @@
 import tkinter as tk
-import ast
 import operator
 from math import sqrt
 
