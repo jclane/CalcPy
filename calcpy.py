@@ -1,4 +1,5 @@
 import tkinter as tk
+import ast
 import operator
 from math import sqrt
 
@@ -178,7 +179,6 @@ class Main(tk.Tk):
             value = value.char
         if self.equation.get().startswith("0"):
             self.equation.set("")
-        print(value)
         if value in "+-*/":
             self.equation_arr.append(value)
         if value in "0123456789":
@@ -208,15 +208,18 @@ class Main(tk.Tk):
     def do_maths(self, evt=None):
         if self.equation.get():
             self.insert_to_history_box(self.equation.get())
-            self.result = eval(self.equation.get(),
-                               {},
-                               {"add":operator.add,
-                                "sub":operator.sub,
-                                "mul":operator.mul,
-                                "truediv":operator.truediv,
-                                "sqrt":sqrt,
-                                "pow":operator.pow}
-                                )
+            try:
+                self.result = eval(self.equation.get(),
+                                   {},
+                                   {"add":operator.add,
+                                    "sub":operator.sub,
+                                    "mul":operator.mul,
+                                    "truediv":operator.truediv,
+                                    "sqrt":sqrt,
+                                    "pow":operator.pow}
+                                   )
+            except ZeroDivisionError:
+                self.result = "ERROR: Cannot divide by zero"
             self.equation_arr = [str(self.result)]
             self.equation.set(self.result)
 
@@ -274,6 +277,7 @@ class Main(tk.Tk):
     def recipro(self):
         self.equation.set("1/" + self.equation.get())
         self.do_maths()
+
 
 if __name__ == "__main__":
     app = Main()
