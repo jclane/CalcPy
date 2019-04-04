@@ -187,6 +187,9 @@ class Main(tk.Tk):
                  self.equation_arr.append(value)
         if self.equation_arr[0] == "0":
             del self.equation_arr[0]
+
+        self.equation_arr = [num if not num.startswith("0") else num[1:] for num in self.equation_arr ]
+
         self.equation.set("".join(self.equation_arr))
 
     def square_root(self):
