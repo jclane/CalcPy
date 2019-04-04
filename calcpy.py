@@ -1,6 +1,5 @@
 import tkinter as tk
-import ast
-import operator
+from operator import add, sub, mul, truediv, pow
 from math import sqrt
 
 
@@ -211,12 +210,12 @@ class Main(tk.Tk):
             try:
                 self.result = eval(self.equation.get(),
                                    {},
-                                   {"add":operator.add,
-                                    "sub":operator.sub,
-                                    "mul":operator.mul,
-                                    "truediv":operator.truediv,
+                                   {"add":add,
+                                    "sub":sub,
+                                    "mul":mul,
+                                    "truediv":truediv,
                                     "sqrt":sqrt,
-                                    "pow":operator.pow}
+                                    "pow":pow}
                                    )
             except ZeroDivisionError:
                 self.result = "ERROR: Cannot divide by zero"
