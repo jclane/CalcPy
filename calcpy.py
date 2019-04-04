@@ -270,7 +270,10 @@ class Main(tk.Tk):
             self.equation.set("".join(self.equation_arr))
 
     def posineg(self, evt=None):
-        self.equation_arr[-1] = "-" + self.equation_arr[-1]
+        if self.equation_arr[-1].startswith("-"):
+            self.equation_arr[-1] = self.equation_arr[-1][1:]
+        else:
+            self.equation_arr[-1] = "-" + self.equation_arr[-1]
         self.equation.set("".join(self.equation_arr))
 
     def recipro(self):
