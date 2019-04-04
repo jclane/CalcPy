@@ -109,9 +109,9 @@ class Main(tk.Tk):
                   self.insert_to_entry_box(num)).grid(column=3, row=5,
                                                       padx=2.5, pady=2.5,
                                                       sticky="EW")
-        tk.Button(self.buttons, text="1/x").grid(column=4, row=5,
-                                                 padx=2.5, pady=2.5,
-                                                 sticky="EW")
+        tk.Button(self.buttons, text="1/n",
+                  command=self.recipro).grid(column=4, row=5, padx=2.5,
+                                             pady=2.5, sticky="EW")
 
         tk.Button(self.buttons, text="1",
                   command=lambda num="1":
@@ -165,8 +165,11 @@ class Main(tk.Tk):
             self.buttons.bind_all("Key-" + str(num) + ">", self.insert_to_entry_box)
 
     def click_history_item(self, evt):
-        self.equation.set(evt.widget.get(evt.widget.curselection()[0]))
-        self.equation_arr = self.equation.get().split(" ")
+        try:
+            self.equation.set(evt.widget.get(evt.widget.curselection()[0]))
+            self.equation_arr = self.equation.get().split(" ")
+        except:
+            pass
 
     def insert_to_history_box(self, equation):
         self.result_box.insert(tk.END, equation)
@@ -176,6 +179,7 @@ class Main(tk.Tk):
             value = value.char
         if self.equation.get().startswith("0"):
             self.equation.set("")
+        print(value)
         if value in "+-*/":
             self.equation_arr.append(value)
         if value in "0123456789":
@@ -216,7 +220,6 @@ class Main(tk.Tk):
                                 )
             self.equation_arr = [str(self.result)]
             self.equation.set(self.result)
-
 
     def mem_recall(self):
         try:
@@ -268,6 +271,10 @@ class Main(tk.Tk):
     def posineg(self, evt=None):
         self.equation_arr[-1] = "-" + self.equation_arr[-1]
         self.equation.set("".join(self.equation_arr))
+
+    def recipro(self):
+        self.equation.set("1/" + self.equation.get())
+        self.do_maths()
 
 if __name__ == "__main__":
     app = Main()
