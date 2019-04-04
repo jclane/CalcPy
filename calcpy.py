@@ -164,11 +164,9 @@ class Main(tk.Tk):
             self.buttons.bind_all("Key-" + str(num) + ">", self.insert_to_entry_box)
 
     def click_history_item(self, evt):
-        try:
+        if evt.widget.curselection():
             self.equation.set(evt.widget.get(evt.widget.curselection()[0]))
             self.equation_arr = self.equation.get().split(" ")
-        except:
-            pass
 
     def insert_to_history_box(self, equation):
         self.result_box.insert(tk.END, equation)
