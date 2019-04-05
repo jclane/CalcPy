@@ -140,8 +140,10 @@ class Main(tk.Tk):
                   self.insert_to_entry_box(num)).grid(column=0, row=7,
                                                       columnspan=2, padx=2.5,
                                                       pady=2.5, sticky="EW")
-        tk.Button(self.buttons, text=".").grid(column=2, row=7, padx=2.5,
-                                               pady=2.5, sticky="EW")
+        tk.Button(self.buttons, text=".",
+                  command=lambda num=".":
+                  self.insert_to_entry_box(num)).grid(column=2, row=7, padx=2.5,
+                                                      pady=2.5, sticky="EW")
         tk.Button(self.buttons, text="+",
                   command=lambda num="+":
                   self.insert_to_entry_box(num)).grid(column=3, row=7,
@@ -176,7 +178,7 @@ class Main(tk.Tk):
             self.equation.set("")
         if value in "+-*/":
             self.equation_arr.append(value)
-        if value in "0123456789":
+        if value in "0123456789.":
             if len(self.equation_arr) and self.equation_arr[-1] not in "+-*/":
                 self.equation_arr[-1] += value
             else:
