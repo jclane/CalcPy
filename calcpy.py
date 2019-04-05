@@ -183,7 +183,9 @@ class Main(tk.Tk):
                 self.equation_arr.append(value)
         elif value == "." and "." not in self.equation_arr[-1]:
             self.equation_arr[-1] += value
-
+        self.equation_arr = [num if not num.startswith("0") or
+                             "." in num else
+                             num[1:] for num in self.equation_arr]
         self.equation.set("".join(self.equation_arr))
 
     def square_root(self):
@@ -202,6 +204,7 @@ class Main(tk.Tk):
 
     def do_maths(self, evt=None):
         if self.equation.get():
+
             self.insert_to_history_box(self.equation.get())
             try:
                 self.result = eval(self.equation.get(),
