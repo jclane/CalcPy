@@ -174,20 +174,15 @@ class Main(tk.Tk):
     def insert_to_entry_box(self, value):
         if hasattr(value, "char"):
             value = value.char
-        if self.equation.get().startswith("0"):
-            self.equation.set("")
         if value in "+-*/":
             self.equation_arr.append(value)
-        if value in "0123456789.":
+        if value in "0123456789":
             if len(self.equation_arr) and self.equation_arr[-1] not in "+-*/":
                 self.equation_arr[-1] += value
             else:
-                 self.equation_arr.append(value)
-        if self.equation_arr[0] == "0":
-            del self.equation_arr[0]
-
-        self.equation_arr = [num if not num.startswith("0") else
-                             num[1:] for num in self.equation_arr]
+                self.equation_arr.append(value)
+        elif value == "." and "." not in self.equation_arr[-1]:
+            self.equation_arr[-1] += value
 
         self.equation.set("".join(self.equation_arr))
 
