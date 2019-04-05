@@ -9,7 +9,6 @@ class Main(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title("CalcPy")
         self.resizable(0, 0)
-        self.curr_num = ""
         self.equation = tk.StringVar()
         self.equation.set("0")
         self.calc_mem = tk.IntVar()
@@ -83,8 +82,7 @@ class Main(tk.Tk):
                                                       padx=2.5, pady=2.5,
                                                       sticky="EW")
         tk.Button(self.buttons, text="%",
-                  command=lambda num="%":
-                  self.insert_to_entry_box(num)).grid(column=4, row=4,
+                  command=self.do_percent_maths).grid(column=4, row=4,
                                                       padx=2.5, pady=2.5,
                                                       sticky="EW")
 
@@ -186,7 +184,8 @@ class Main(tk.Tk):
         if self.equation_arr[0] == "0":
             del self.equation_arr[0]
 
-        self.equation_arr = [num if not num.startswith("0") else num[1:] for num in self.equation_arr ]
+        self.equation_arr = [num if not num.startswith("0") else
+                             num[1:] for num in self.equation_arr]
 
         self.equation.set("".join(self.equation_arr))
 
@@ -203,7 +202,6 @@ class Main(tk.Tk):
     def clear(self):
         self.equation.set("")
         self.equation_arr = []
-        self.curr_num = ""
 
     def do_maths(self, evt=None):
         if self.equation.get():
@@ -222,6 +220,11 @@ class Main(tk.Tk):
                 self.result = "ERROR: Cannot divide by zero"
             self.equation_arr = [str(self.result)]
             self.equation.set(self.result)
+
+    def do_percent_maths(self):
+        if self.equation.get():
+            self.equation_arr[-1] = str(eval("(" + "".join(self.equation_arr[0:len(self.equation_arr)-2]) + ")*." + self.equation_arr[-1], {}, {"mul":mul}))
+            self.do_maths()
 
     def mem_recall(self):
         try:
@@ -248,7 +251,6 @@ class Main(tk.Tk):
             self.insert_to_history_box([self.equation.get(), "+", self.calc_mem.get()])
             self.equation_arr = []
             self.equation.set("0")
-            self.curr_num = ""
             self.insert_to_entry_box(str(result))
 
         except ValueError:
