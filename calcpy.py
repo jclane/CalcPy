@@ -140,8 +140,10 @@ class Main(tk.Tk):
                   self.insert_to_entry_box(num)).grid(column=0, row=7,
                                                       columnspan=2, padx=2.5,
                                                       pady=2.5, sticky="EW")
-        tk.Button(self.buttons, text=".").grid(column=2, row=7, padx=2.5,
-                                               pady=2.5, sticky="EW")
+        tk.Button(self.buttons, text=".",
+                  command=lambda num=".":
+                  self.insert_to_entry_box(num)).grid(column=2, row=7, padx=2.5,
+                                                      pady=2.5, sticky="EW")
         tk.Button(self.buttons, text="+",
                   command=lambda num="+":
                   self.insert_to_entry_box(num)).grid(column=3, row=7,
@@ -172,21 +174,18 @@ class Main(tk.Tk):
     def insert_to_entry_box(self, value):
         if hasattr(value, "char"):
             value = value.char
-        if self.equation.get().startswith("0"):
-            self.equation.set("")
         if value in "+-*/":
             self.equation_arr.append(value)
         if value in "0123456789":
             if len(self.equation_arr) and self.equation_arr[-1] not in "+-*/":
                 self.equation_arr[-1] += value
             else:
-                 self.equation_arr.append(value)
-        if self.equation_arr[0] == "0":
-            del self.equation_arr[0]
-
-        self.equation_arr = [num if not num.startswith("0") else
+                self.equation_arr.append(value)
+        elif value == "." and "." not in self.equation_arr[-1]:
+            self.equation_arr[-1] += value
+        self.equation_arr = [num if not num.startswith("0") or
+                             "." in num else
                              num[1:] for num in self.equation_arr]
-
         self.equation.set("".join(self.equation_arr))
 
     def square_root(self):
@@ -205,6 +204,7 @@ class Main(tk.Tk):
 
     def do_maths(self, evt=None):
         if self.equation.get():
+
             self.insert_to_history_box(self.equation.get())
             try:
                 self.result = eval(self.equation.get(),
